@@ -1,0 +1,4 @@
+flask
+tronpy
+mnemonic
+requests
