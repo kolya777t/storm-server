@@ -1,16 +1,22 @@
 from flask import Flask, request, jsonify
 import random
+import os
 
 app = Flask(__name__)
 CHECKED_FILE = "checked.txt"
 FOUND_FILE = "found.txt"
 WORDS_FILE = "bip39_words.txt"
 
-# Загрузка словаря
+# Ensure checked and found files exist
+for file in [CHECKED_FILE, FOUND_FILE]:
+    if not os.path.exists(file):
+        open(file, "w").close()
+
+# Load words from BIP39 dictionary
 with open(WORDS_FILE) as f:
     WORDS = [w.strip() for w in f.readlines()]
 
-# Проверка тестовой фразы при запуске
+# Test phrase is always included at launch
 TEST_PHRASE = "allow claim sustain comfort tuition coral quote topple scorpion nation merry kiss"
 with open(FOUND_FILE, "a") as f:
     f.write(f"[TEST] {TEST_PHRASE} | TEST_ADDRESS | 500 USDT\n")
@@ -40,6 +46,3 @@ def submit_found():
     with open(FOUND_FILE, "a") as f:
         f.write(f"{data['phrase']} | {data['address']} | {data['balance']} USDT\n")
     return jsonify({"status": "saved"})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, threaded=True)
